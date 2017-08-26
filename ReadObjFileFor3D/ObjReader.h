@@ -4,8 +4,13 @@
 using namespace DirectX; 
 using namespace std;
 
-
 typedef unsigned int UINT;
+
+#define GET_X_Y_Z_ARGS(float3) float3.x, float3.y, float3.z
+#define GET_X_Y_ARGS(float2) float2.x, float2.y
+
+//将英寸单位转换为厘米单位，乘以2.54。
+#define INCH_TO_CM(floatNumberInInch) (floatNumberInInch * 2.54f)
 
 class ObjReader
 {
@@ -24,23 +29,34 @@ public:
 		//网格的名字。
 		string name;
 		//顶点坐标。
-		 vector<uint32> LocationList;
+		 vector<UINT> LocationList;
 		//贴图坐标。
-		vector<uint32> TextureList;
+		vector<UINT> TextureList;
 		//法线。
-		vector<uint32> NormalList;
+		vector<UINT> NormalList;
+		//面数。
+		UINT faceCount;
+
+	public:
+		ObjectGeometry(const string& _name);
+		//形如“f 91/12/862 94/15/863 102/15/864”这样的三角面定义，
+		//添加各个索引值。
+		void AddFaceDefination(const string& faceDefination);
+	protected:
+		//添加顶点定义，要求最好一次添加三个顶点，组成一个面。
+		void AddVertexDefination(const string& vertextDefination);
 	};
 
 public:
 	//初始化缓冲的大小，用于构建绝大多数Vector的初始大小。
 	static UINT initVectorSize;
 
-protected:
 	//读取指定的Obj文件，将这个文件中的所有单个Obj读取为一个unorderedMap，
 	//每一个名字对应一个物体网格。
 	static unique_ptr<unordered_map< 
-		string, unique_ptr<vector<GeometryGenerator::MeshData>>>> ReadObjFile(string filePath);
+		string, unique_ptr<GeometryGenerator::MeshData>>> ReadObjFile(string filePath);
 
+protected:
 	//从obj文件中读取关键数据到各个vector中。等待后续的处理，不负责关闭文件。
 	static void ReadKeyInfo(
 		ifstream& openedFile,		//已经打开的Obj文件流，不负责关上。
@@ -51,7 +67,7 @@ protected:
 
 	//将obj文件中读取的关键数据进行转化，变成MeshData。
 	static unique_ptr<unordered_map<
-		string, unique_ptr<vector<GeometryGenerator::MeshData>>>> Convert(
+		string, unique_ptr<GeometryGenerator::MeshData>>> Convert(
 			vector<XMFLOAT3>& vs,		//顶点坐标缓冲。
 			vector<XMFLOAT3>& vts,		//贴图坐标缓冲。
 			vector<XMFLOAT3>& ns,		//法线向量缓冲。

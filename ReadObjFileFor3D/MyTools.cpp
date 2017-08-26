@@ -2,6 +2,7 @@
 
 void SplitString(const std::string& source, std::vector<std::string>& output, const std::string& splitBy)
 {
+	output.clear();
 	std::string::size_type pos1, pos2;
 	pos2 = source.find(splitBy);
 	pos1 = 0;

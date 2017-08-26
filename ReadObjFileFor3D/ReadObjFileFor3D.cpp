@@ -15,20 +15,45 @@ ostream& operator << (ostream& out, vector<string>& strings)
 	return out;
 }
 
-int main()
+ostream& operator << (ostream& out, GeometryGenerator::MeshData& meshData)
 {
-	string s("f 1/1/1  2/2/2 3/3/3 ");
-	vector<string> subStrings;
-	SplitString(s, subStrings, " ");
-
-
-	for (size_t i = 0; i < subStrings.size(); ++i)
+	//输出顶点坐标。
+	for (auto& vertex : meshData.Vertices)
 	{
-		vector<string> subNumbers;
-		SplitString(subStrings[i], subNumbers, "/");
-		cout << subNumbers.size() << endl << subNumbers << endl;
+		out << "坐标：x: " << vertex.Position.x << ", y: " << vertex.Position.y << ", z: " << vertex.Position.z << endl;
+		out << "法线：x: " << vertex.Normal.x << ", y: " << vertex.Normal.y << ", z: " << vertex.Normal.z << endl << endl;
 	}
 
+	return out;
+}
+
+void RunTest()
+{
+	cout << "测试开始" << endl;
+	auto result = ObjReader::ReadObjFile("Tank.obj");
+
+	for (auto& geo : *result)
+	{
+		cout << "已读取网格：" << geo.first << endl;
+		cout << "*********************************" << endl
+			<< "***************" << endl
+			<< *(geo.second)
+			<< "***************" << endl
+			<< "*********************************" << endl;
+	}
+	cout << "测试结束" << endl;
+}
+
+int main()
+{
+	try
+	{
+		RunTest();
+	}
+	catch (SimpleException& e)
+	{
+		cout << e.ToString() << endl;
+	}
 
 	//wait for '?'
 	while ('?' != getchar());
